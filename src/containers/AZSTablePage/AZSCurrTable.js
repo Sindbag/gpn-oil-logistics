@@ -46,7 +46,7 @@ class AZSCurrTable extends Component {
                 negative={item.products[p].status === 3}
                 warning={item.products[p].status === 2}
               >
-                {getTime(item.products[p].curr_d.toFixed(2)).format('DD.MM HH:m')}
+                {getTime(item.products[p].curr_d.toFixed(2)).format('DD.MM HH:mm')}
               </Table.Cell>)
             }
             </Table.Row>
