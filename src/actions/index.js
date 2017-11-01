@@ -15,6 +15,10 @@ export const REPO = createRequestTypes('REPO');
 export const STARRED = createRequestTypes('STARRED');
 export const STARGAZERS = createRequestTypes('STARGAZERS');
 
+export const USER_LOGIN = 'USER_LOGIN';
+export const USER_ERROR = 'USER_ERROR';
+export const USER_LOGOUT = 'USER_LOGOUT';
+
 export const UPDATE_ROUTER_STATE = 'UPDATE_ROUTER_STATE';
 export const NAVIGATE = 'NAVIGATE';
 export const LOAD_USER_PAGE = 'LOAD_USER_PAGE';
@@ -65,3 +69,6 @@ export const loadMoreStarred = (login) => action(LOAD_MORE_STARRED, { login });
 export const loadMoreStargazers = (fullName) => action(LOAD_MORE_STARGAZERS, { fullName });
 
 export const resetErrorMessage = () => action(RESET_ERROR_MESSAGE);
+
+export const userAuth = (success, username) => action(USER_LOGIN, { auth: { success, username } });
+export const userAuthFail = (error) => action(USER_ERROR, { auth: { error } });

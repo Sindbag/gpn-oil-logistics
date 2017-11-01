@@ -1,5 +1,5 @@
 export Root from './Root/Root';
 export App from './App/App';
 export UserPage from './UserPage/UserPage';
-export RepoPage from './RepoPage/RepoPage';
+export AZSTablePage from './AZSTablePage/AZSTablePage';
 export NotFound from './NotFound/NotFound';

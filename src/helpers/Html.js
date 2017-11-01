@@ -31,18 +31,19 @@ class Html extends Component {
 
           <link rel="shortcut icon" href="/favicon.ico" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          
+
           {/* styles (will be present only in production with webpack extract text plugin) */}
           {Object.keys(assets.styles).map((style, key) =>
             <link href={assets.styles[style]} key={key} media="screen, projection" rel="stylesheet" type="text/css" charSet="UTF-8" />
           )}
-                  
+          <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet"/>
+          <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.12/semantic.min.css"/>
         </head>
         <body>
           <div id="content" dangerouslySetInnerHTML={{ __html: content }}/>
           <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
           <script dangerouslySetInnerHTML={{ __html: `window.__data=${serialize(store.getState())};` }} charSet="UTF-8" />
-          <script src={assets.javascript.main} charSet="UTF-8" />          
+          <script src={assets.javascript.main} charSet="UTF-8" />
         </body>
       </html>
     );

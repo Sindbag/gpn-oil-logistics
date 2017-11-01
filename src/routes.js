@@ -4,16 +4,22 @@ import {
   App,
   NotFound,
   UserPage,
-  RepoPage
+  AZSTablePage
 } from 'containers';
+import Auth from './containers/Auth/Auth';
+import AZSPage from './containers/AZSPage/AZSPage';
 
 export default () => {
   const routes = (
-    <Route path="/" component={App}>
-      <Route path="/:login" component={UserPage} />
-      <Route path="/:login/:name" component={RepoPage} />
-      <Route path="/404" component={NotFound} />
-      <Route path="*" component={NotFound} />
+    <Route>
+      <Route path="/auth" component={Auth} />
+      <Route path="/" component={App}>
+        <Route path="/map" component={UserPage} />
+        <Route path="/list" component={AZSTablePage} />
+        <Route path="/azs/:idx" component={AZSPage} />
+        <Route path="/404" component={NotFound} />
+        <Route path="*" component={NotFound} />
+      </Route>
     </Route>
   );
   return routes;

@@ -4,6 +4,7 @@ import { api, history } from '../services';
 import * as actions from '../actions';
 
 import { getUser, getRepo, getStarredByUser, getStargazersByRepo } from '../reducers/selectors';
+import { navigate, userAuthFail } from '../actions/index';
 
 // each entity defines 3 creators { request, success, failure }
 const { user, repo, starred, stargazers } = actions;
@@ -128,12 +129,23 @@ function* watchLoadMoreStargazers() {
   }
 }
 
+// Fetches more starred repos, use pagination data from getStarredByUser(login)
+function* watchLogin() {
+  const login = yield take(actions.USER_LOGIN);
+  if (login.auth.success) {
+    yield put(navigate('/'));
+  } else {
+    yield put(userAuthFail('Wrong password or username'));
+  }
+}
+
 export default function* root() {
   yield [
     fork(watchNavigate),
     fork(watchLoadUserPage),
     fork(watchLoadRepoPage),
     fork(watchLoadMoreStarred),
-    fork(watchLoadMoreStargazers)
+    fork(watchLoadMoreStargazers),
+    fork(watchLogin)
   ];
 }

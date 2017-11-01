@@ -1,18 +1,24 @@
+/* eslint-disable quote-props,max-len */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Helmet from 'react-helmet';
-import { Explore } from 'components';
-
 import {
   navigate,
   updateRouterState,
   resetErrorMessage
 } from '../../actions';
-import styles from './App.scss'; // eslint-disable-line
+import styles from './App.scss';// eslint-disable-line
+import MenuHeader from '../MenuHeader/MenuHeader';
+import { Grid } from 'semantic-ui-react';
+import AZSMap from '../../components/AZSMap/AZSMap';
+import AZSCurrTable from '../AZSTablePage/AZSCurrTable';
+
+const localStorage = require('web-storage')().localStorage;
 
 class App extends Component {
   constructor(props) {
     super(props);
+    if (!localStorage.get('username')) this.props.navigate('/auth');
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -45,16 +51,31 @@ class App extends Component {
   }
 
   render() {
-    const { children, inputValue } = this.props;
+    const { children, items, navigate: nav } = this.props;
+    items.sort((a, b) => a.state - b.state < 0);
     return (
       <div className={styles.app}>
         <Helmet
-          title="React Universal Saga"
-          meta={[{ property: 'og:site_name', content: 'React Universal Saga' }]}
+          title="Логистика топлива - ГазПромНефть"
+          meta={[{ property: 'og:site_name', content: 'Логистика топлива, г. Новосибирск' }]}
         />
-        <Explore value={inputValue} onChange={this.handleChange} />
-        <div className={styles.content}>
-          {children}
+        {localStorage.get('username') &&
+          <MenuHeader />
+        }
+        <div>
+          {children ||
+            <Grid>
+              <Grid.Column style={{ minHeight: '60vh', maxHeight: '80vh' }} mobile={16} tablet={8} computer={8}>
+                <AZSMap
+                  items={items} center={[items[0].y, items[0].x]} navigate={nav}
+                  style={{ minHeight: '100%', width: '100%' }}
+                />
+              </Grid.Column>
+              <Grid.Column style={{ minHeight: '33%' }} mobile={16} tablet={8} computer={8}>
+                <AZSCurrTable items={this.props.items} navigate={nav} />
+              </Grid.Column>
+            </Grid>
+          }
         </div>
       </div>
       );
@@ -71,20 +92,18 @@ App.propTypes = {
   location: PropTypes.shape({
     pathname: PropTypes.string
   }),
-  params: PropTypes.object
+  params: PropTypes.object,
+  username: PropTypes.string,
+  items: PropTypes.array,
 };
 
-// function preload() {
-//   return [
-//     [sagaName]
-//   ];
-// }
-// App.preload = preload;
-
 function mapStateToProps(state) {
+  const items = Object.values(state.itemsProducer.items);
   return {
     errorMessage: state.errorMessage,
-    inputValue: state.router.pathname.substring(1)
+    inputValue: state.router.pathname.substring(1),
+    username: state.authUser.username,
+    items
   };
 }
 
