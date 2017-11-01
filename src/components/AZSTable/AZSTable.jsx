@@ -1,6 +1,14 @@
 /* eslint-disable max-len */
 import React, { PropTypes, Component } from 'react';
 import { Table } from 'semantic-ui-react';
+import moment from 'moment';
+
+const getTime = days => {
+  const m = moment();
+  m.add(Math.floor(days), 'days');
+  m.add(Math.round((days - Math.floor(days)) * 12 * 60), 'minutes');
+  return m;
+};
 
 class AZSTable extends Component {
 
@@ -16,6 +24,7 @@ class AZSTable extends Component {
             <Table.HeaderCell>Наименование</Table.HeaderCell>
             <Table.HeaderCell>Адрес</Table.HeaderCell>
             <Table.HeaderCell>Состояние</Table.HeaderCell>
+            <Table.HeaderCell>Ближайший выезд</Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
@@ -26,12 +35,11 @@ class AZSTable extends Component {
               negative={Math.max(...Object.values(item.products).map(p => p.status)) === 3}
               warning={Math.max(...Object.values(item.products).map(p => p.status)) === 2}
             >
-              <a onClick={() => navigate(`/azs/${item.idx}`)}>
-                <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{item.idx}</Table.Cell>
-                <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{item.name}</Table.Cell>
-                <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{`${item.city}, ${item.street}`}</Table.Cell>
-                <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{Math.max(...Object.values(item.products).map(p => p.status))}</Table.Cell>
-              </a>
+              <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{item.idx}</Table.Cell>
+              <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{item.name}</Table.Cell>
+              <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{`${item.city}, ${item.street}`}</Table.Cell>
+              <Table.Cell onClick={() => navigate(`/azs/${item.idx}`)}>{Math.max(...Object.values(item.products).map(p => p.status))}</Table.Cell>
+              <Table.Cell>{getTime(Math.min(...Object.entries(item.products).map(([, b]) => b.curr_d.toFixed(2)))).format('DD.MM HH:mm')}</Table.Cell>
             </Table.Row>
           )}
         </Table.Body>

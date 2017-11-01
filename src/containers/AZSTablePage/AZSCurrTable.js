@@ -3,6 +3,15 @@ import _ from 'lodash';
 import React, { PropTypes, Component } from 'react';
 import { Table } from 'semantic-ui-react';
 
+import moment from 'moment';
+
+const getTime = days => {
+  const m = moment();
+  m.add(Math.floor(days), 'days');
+  m.add(Math.round((days - Math.floor(days)) * 12), 'hours');
+  return m;
+};
+
 class AZSCurrTable extends Component {
   constructor(props) {
     super(props);
@@ -37,7 +46,7 @@ class AZSCurrTable extends Component {
                 negative={item.products[p].status === 3}
                 warning={item.products[p].status === 2}
               >
-                {item.products[p].curr.toFixed(2)}
+                {getTime(item.products[p].curr_d.toFixed(2)).format('DD.MM HH:m')}
               </Table.Cell>)
             }
             </Table.Row>

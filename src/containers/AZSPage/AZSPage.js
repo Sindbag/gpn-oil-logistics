@@ -1,16 +1,16 @@
-/* eslint-disable max-len,react/prop-types,quote-props,no-unused-vars,no-nested-ternary */
+/* eslint-disable max-len,react/prop-types,quote-props,no-unused-vars,no-nested-ternary,no-confusing-arrow,arrow-body-style */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Repo, User, List } from 'components';
-import {Button, Divider, Grid, Header, Modal, Form, Segment, Table, Select} from "semantic-ui-react"; // eslint-disable-line
+import {Button, Divider, Grid, Header, Modal, Segment, Table, Select, Input} from "semantic-ui-react"; // eslint-disable-line
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Label } from 'recharts';
 
-const ModalModalExample = ({ azs }) => (
-  <Modal trigger={<Button primary floated={'right'}>Заказать</Button>}>
-    <Modal.Header>{`Заказать доставку топлива на АЗС ${azs}`}</Modal.Header>
+const ModalModalExample = ({ azs, product }) => (
+  <Modal trigger={<Button primary style={{ float: 'right' }}>Заказать</Button>}>
+    <Modal.Header>{`Заказать доставку топлива (${product}) на АЗС ${azs}`}</Modal.Header>
     <Modal.Content image>
       <Modal.Description>
-        <Header>Заканчивается товар</Header>
+        <Header>{`Заканчивается ${product}`}</Header>
         <p>На этой станции заканчивается топливо,
           закажите доставку для пополнения запасов, чтобы избежать простоя АЗС.
         </p>
@@ -27,15 +27,23 @@ const ModalModalExample = ({ azs }) => (
           placeholder="АЗС"
           options={[{ 'value': azs, 'text': azs }]}
         />
+        <Input type="datetime" placeholder="Время" />
         <Button floated="right" positive>{'Заказать'}</Button>
       </Modal.Description>
     </Modal.Content>
   </Modal>
 );
 
+const ddelta = -13 + 31 * 10;
+const getDate = x => {
+  const tmp = ddelta + x;
+  return `${tmp % 31}.${Math.ceil(tmp / 31)}`;
+  // return x;
+};
+
 const SimpleAreaChart = ({ data, label, status }) => (
   <AreaChart
-    width={600}
+    width={640}
     height={400}
     data={data}
     margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
@@ -62,7 +70,7 @@ const SimpleAreaChart = ({ data, label, status }) => (
         <stop offset="95%" stopColor="#333" stopOpacity={0.8} />
       </linearGradient>
     </defs>
-    <XAxis dataKey="x" />
+    <XAxis dataKey="x" tickFormatter={tx => getDate(tx - data[0].x)} />
     <YAxis />
     <CartesianGrid />
     <Tooltip />
@@ -99,6 +107,12 @@ class AZSPage extends Component {
       const s2 = b[1].status;
       return s2 - s1;
     });
+    const rrange = [1, 2, 3, 4, 5];
+    const delta = -2 + 31 * 10;
+
+    const getValue = (d, i, s) => s < 3 ? ((d[i] && (d[i].hist_y || d[i].pred_y)) ||
+        ((getValue(d, i - 1, s + 1) + getValue(d, i + 1, s + 1)) / 2))
+        : 0;
 
     return (
       <Segment>
@@ -107,24 +121,22 @@ class AZSPage extends Component {
           <Grid.Row columns={2}>
             {data.map(([p, d]) =>
               <Grid.Column key={p}>
-                <Header as="h2" content={`Продукт: ${p}`} subheader={`Текущий остаток: ${d.curr.toFixed(2)}`} />
+                <Header as="h2" content={`Продукт: ${p}`} subheader={`Текущий остаток: ${d.curr.toFixed(2)}, т`} />
                 <Table>
                   <Table.Header>
                     <Table.Row>
-                      {d.data.slice(d.data.length - 7, d.data.length - 2).map(v =>
-                        <Table.HeaderCell key={v.x}>{v.x}</Table.HeaderCell>
-                      )}
+                      {rrange.map(i => <Table.HeaderCell key={i}>{(i + delta) % 31 || 31}</Table.HeaderCell>)}
                     </Table.Row>
                   </Table.Header>
 
                   <Table.Body>
                     <Table.Row>
-                      {d.data.slice(d.data.length - 7, d.data.length - 2).map(v =>
+                      {rrange.map(i =>
                         <Table.Cell
-                          negative={v.pred_y && d.status === 3}
-                          warning={v.pred_y && d.status === 2}
-                          key={v.x}
-                        >{v.hist_y || v.pred_y}</Table.Cell>
+                          negative={(d.data[d.data.length - 9 + i] && d.data[d.data.length - 9 + i].pred_y) && (d.status === 3)}
+                          warning={(d.data[d.data.length - 9 + i] && d.data[d.data.length - 9 + i].pred_y) && (d.status === 2)}
+                          key={i}
+                        >{getValue(d.data, d.data.length - 9 + i, 0).toFixed(2)}</Table.Cell>
                       )}
                     </Table.Row>
                   </Table.Body>
@@ -136,9 +148,11 @@ class AZSPage extends Component {
           <Grid.Row columns={2}>
             {data.map(([p, d]) =>
               <Grid.Column key={p}>
-                <Header as="h2" content={`Продукт: ${p}`} subheader={`Текущий остаток: ${d.curr.toFixed(2)}`} />
-                <ModalModalExample azs={item.idx} />
-                <SimpleAreaChart data={d.data} label={p} status={d.status} />
+                <Segment style={{ marginTop: '2em' }}>
+                  <ModalModalExample azs={item.idx} product={p} />
+                  <Header as="h2" content={`Продукт: ${p}`} subheader={`Текущий остаток: ${d.curr.toFixed(2)}`} />
+                  <center><SimpleAreaChart data={d.data} label={p} status={d.status} /></center>
+                </Segment>
               </Grid.Column>)}
           </Grid.Row>
         </Grid>
