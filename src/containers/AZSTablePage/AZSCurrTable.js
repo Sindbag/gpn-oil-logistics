@@ -2,15 +2,7 @@
 import _ from 'lodash';
 import React, { PropTypes, Component } from 'react';
 import { Table } from 'semantic-ui-react';
-
-import moment from 'moment';
-
-const getTime = days => {
-  const m = moment();
-  m.add(Math.floor(days), 'days');
-  m.add(Math.round((days - Math.floor(days)) * 12), 'hours');
-  return m;
-};
+import { getTime } from '../../components/AZSTable/AZSTable';
 
 class AZSCurrTable extends Component {
   constructor(props) {

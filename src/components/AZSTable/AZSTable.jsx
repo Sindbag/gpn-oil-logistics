@@ -3,7 +3,7 @@ import React, { PropTypes, Component } from 'react';
 import { Table } from 'semantic-ui-react';
 import moment from 'moment';
 
-const getTime = days => {
+export const getTime = days => {
   const m = moment();
   m.add(Math.floor(days), 'days');
   m.add(Math.round((days - Math.floor(days)) * 12 * 60), 'minutes');
