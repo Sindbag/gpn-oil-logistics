@@ -15,10 +15,10 @@ module.exports = Object.assign({
     googleAnalytics: {
       appId: process.env.GOOGLE_ANALYTIC_ID || 'UA-XXXXXXXX-X'
     },
-    title: 'React Universal Saga',
-    description: 'Universal React Starter Kit ft. Redux Saga',
+    title: 'GPN Logistics Analysis',
+    description: 'Oil supply speed up and optimization',
     head: {
-      titleTemplate: 'React Universal Saga',
+      titleTemplate: 'GPN Logistics Analysis',
       meta: [
         { name: 'description', content: 'Universal React Starter Kit ft. Redux Saga' },
         { charset: 'utf-8' },

@@ -2,8 +2,36 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Repo, User, List } from 'components';
-import {Button, Divider, Grid, Header, Rail, Segment, Table} from "semantic-ui-react"; // eslint-disable-line
+import {Button, Divider, Grid, Header, Modal, Form, Segment, Table, Select} from "semantic-ui-react"; // eslint-disable-line
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Label } from 'recharts';
+
+const ModalModalExample = ({ azs }) => (
+  <Modal trigger={<Button primary floated={'right'}>Заказать</Button>}>
+    <Modal.Header>{`Заказать доставку топлива на АЗС ${azs}`}</Modal.Header>
+    <Modal.Content image>
+      <Modal.Description>
+        <Header>Заканчивается товар</Header>
+        <p>На этой станции заканчивается топливо,
+          закажите доставку для пополнения запасов, чтобы избежать простоя АЗС.
+        </p>
+        <Select
+          placeholder="Объём"
+          options={
+            ['20 (р 123 тк 234)',
+              '25 (п 123 ри 77)',
+              '30 (ве 2930 11)',
+              '40 (т 111 оо 777)',
+              '50 (т 777 тт 777)'].map(v => ({ 'text': v, 'value': v }))}
+        />
+        <Select
+          placeholder="АЗС"
+          options={[{ 'value': azs, 'text': azs }]}
+        />
+        <Button floated="right" positive>{'Заказать'}</Button>
+      </Modal.Description>
+    </Modal.Content>
+  </Modal>
+);
 
 const SimpleAreaChart = ({ data, label, status }) => (
   <AreaChart
@@ -47,7 +75,6 @@ const SimpleAreaChart = ({ data, label, status }) => (
 
 
 class AZSPage extends Component {
-
   render() {
     const { item } = this.props;
     let data = {};
@@ -110,7 +137,7 @@ class AZSPage extends Component {
             {data.map(([p, d]) =>
               <Grid.Column key={p}>
                 <Header as="h2" content={`Продукт: ${p}`} subheader={`Текущий остаток: ${d.curr.toFixed(2)}`} />
-                <Button primary floated={'right'}>Заказать</Button>
+                <ModalModalExample azs={item.idx} />
                 <SimpleAreaChart data={d.data} label={p} status={d.status} />
               </Grid.Column>)}
           </Grid.Row>
